@@ -11,12 +11,14 @@ using UnityEditor;
 public class AudioTinker : MonoBehaviour {
     private AudioSource audioSource;
     private AudioClip outAudioClip;
+    public int frequency2;
+    public int time;
     
     
     // Start is called before the first frame update
     void Start() {
         audioSource = GetComponent<AudioSource>();
-        outAudioClip = CreateToneAudioClip(1500);
+        outAudioClip = CreateToneAudioClip(frequency2);
     }
 
     void Update()
@@ -37,9 +39,8 @@ public class AudioTinker : MonoBehaviour {
     
     // Private 
     private AudioClip CreateToneAudioClip(int frequency) {
-        int sampleDurationSecs = 5;
         int sampleRate = 44100;
-        int sampleLength = sampleRate * sampleDurationSecs;
+        int sampleLength = sampleRate * time;
         float maxValue = 1f / 4f;
         
         var audioClip = AudioClip.Create("tone", sampleLength, 1, sampleRate, false);
