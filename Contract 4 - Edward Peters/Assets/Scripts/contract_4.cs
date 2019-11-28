@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEditor;
 
-public class mainMenu : MonoBehaviour
+public class contract_4 : MonoBehaviour
 {
     private AudioSource audioSource;
     private AudioClip outAudioClip;
