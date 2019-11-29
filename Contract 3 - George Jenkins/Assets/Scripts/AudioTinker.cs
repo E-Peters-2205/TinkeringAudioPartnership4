@@ -22,13 +22,7 @@ public class AudioTinker : MonoBehaviour {
 
 
     // the frquancy of notes
-    int Frequancy = 1500;
 
-    int Note_C = (1047);
-    int Note_D = (1175);
-    int Note_E = (1319);
-    int Note_F = (1397);
-    int Note_G = (1568);
 
     
 
@@ -62,11 +56,11 @@ public class AudioTinker : MonoBehaviour {
     
     
     // Private 
-    private AudioClip CreateToneAudioClip(int Frequency, double Duration) {
+    private AudioClip CreateToneAudioClip(int Frequency, double Duration) {                   
         
         int sampleRate = 44100;
         int sampleLength =  Convert.ToInt32 (Math.Floor(sampleRate * Duration));              //Above sets variables that will be used to create the tone.
-        float maxValue = 1f / 4f;                                        // max value is a multiplyer to evenly change every audio sample. 
+        float maxValue = 1f / 4f;                                                             // max value is a multiplyer to evenly change every audio sample. 
         
         var audioToneClip = AudioClip.Create("tone", sampleLength, 1, sampleRate, false);
         
@@ -88,29 +82,44 @@ public class AudioTinker : MonoBehaviour {
 
         List<AudioClip> Audio_Clips = new List<AudioClip>();    //makes an empty list to add future clips too
         
-        int count = 0;                                          // a counter for the loop
+        
 
-        System.Random r = new System.Random(); 
+        // for loop to keep trak of notes going up and back
+        Duration = 1;
+        for (int Tone = 0; Tone < TonesC6_B6.Count; Tone++){                //A for loop for the notes as they climb
 
-        while (count < 10)                                      // a loop to create different notes
-        {
-            int freq = 440;                                     // creates a variable to store temopary freqancy
-
-            if(r.Next(10) % 2 == 0)                             // number checker to see if odd or even, this changes the note that is played  
-            {
-                freq = TonesC6_B6[0];                           
-            }
-            else
-            {
-                freq = TonesC6_B6[1];
-            }
-
-            Audio_Clips.Add(CreateToneAudioClip(freq, Duration));                //gets the audio numbers for first note in this case C and stores it in an array 
-            //Audio_Clips.Add(CreateToneAudioClip(Note_D,Duration));                //gets audio numbers for second Note 
-                                                                                  //Audio_Clips.Add(CreateToneAudioClip(220*count, Duration));  
-            count++;
+            int freq = TonesC6_B6[Tone];
+            Audio_Clips.Add(CreateToneAudioClip(freq, Duration));
         }
 
+        for (int Note = TonesC6_B6.Count - 1; Note > -1; Note--){                    //A for loop for the notes falling -1 to compensate for the count starting from 1
+
+            int freq = TonesC6_B6[Note];
+            Audio_Clips.Add(CreateToneAudioClip(freq, Duration));
+        }
+        
+        
+        int count = 0;                                                       // a counter for the loop, Duration set for this section of melody
+        System.Random random_number = new System.Random();                   // new random variable
+        Duration = 0.5;                                                      // changes the time each note will play for
+        while (count < 10)                                                   
+        { 
+            int R = random_number.Next(0, TonesC6_B6.Count);                    // sets limits to random number(min/max). no need for -1 here as random dosent include last number. 
+
+            int freq = TonesC6_B6[R];                                           // sets R to a random number between 0 and the number of notes
+
+            Audio_Clips.Add(CreateToneAudioClip(freq, Duration));
+            Audio_Clips.Add(CreateToneAudioClip(freq - 100, Duration));
+            Audio_Clips.Add(CreateToneAudioClip(freq - 200, Duration));         
+            Audio_Clips.Add(CreateToneAudioClip(freq - 300, Duration));
+            Audio_Clips.Add(CreateToneAudioClip(freq - 400, Duration));
+            Audio_Clips.Add(CreateToneAudioClip(freq , Duration));              // added a few more frequenceys to give sets of three a gradually deeper tone and end with the same freqency
+
+            count++;
+
+        }
+            
+            
         int targetSamples = 0;                   // sets a variable to 0 to count the samples
 
         foreach (AudioClip note in Audio_Clips)  // this loop counts the samples 
@@ -122,24 +131,22 @@ public class AudioTinker : MonoBehaviour {
 
         AudioClip melodyClip = AudioClip.Create("melody", targetSamples, 1, 44100, false);  // creates a melody from all the samples
 
-        int offsetPosition = 0;                                     //this variable is used to mark the start of an audio clip 
+        int offsetPosition = 0;                                                             //this variable is used to mark the start of an audio clip 
 
-        foreach (AudioClip note in Audio_Clips)                     // a loop to add the audio clip to melody clip in order
+        foreach (AudioClip note in Audio_Clips)                                             // a loop to add the audio clip to melody clip in order
         {
             
 
-            float[] samples = new float[note.samples];              // 
+            float[] samples = new float[note.samples];              
             note.GetData(samples, 0);
 
-            melodyClip.SetData(samples, offsetPosition);
+            melodyClip.SetData(samples, offsetPosition);          //adds current sample to melody clip at current offset
 
-            offsetPosition += note.samples;
+            offsetPosition += note.samples;                       // updates the offseet for the next tone, the next tone starts as the last tone ends
         }
 
         audioSource.PlayOneShot(melodyClip);
 
-
-        // need to save the audio file 
         
 
     }
