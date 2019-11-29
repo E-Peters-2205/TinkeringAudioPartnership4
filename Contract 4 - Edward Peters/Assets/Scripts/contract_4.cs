@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEditor;
+using UnityEngine.UI;
 using System;
 using System.Threading;
 
@@ -8,22 +8,37 @@ public class contract_4 : MonoBehaviour
 {
     private AudioSource audioSource;
     private AudioClip outAudioClip;
-    public int frequency;
-    public int sampleRate;
-    public float time;
+
+    public static bool started = false;
+
+    public float defaultTime;
+    public static float clickTime { get; set; }
+    public static float mouseOverTime { get; set; }
+    public Slider timeSlider;
+
+    public int defaultSampleRate;
+    public static int clickSampleRate { get; set; }
+    public static int mouseOverSampleRate { get; set; }
+    public Slider sampleRateSlider;
+
+    public int defaultFrequency;
+    public static int clickFrequency { get; set; }
+    public static int mouseOverFrequency { get; set; }
+    public Slider frequencySlider;
+
 
     // Private
-    private AudioClip CreateToneAudioClip(int frequency, int sampleRate)
+    private AudioClip CreateToneAudioClip(int clickFrequency, int clickSampleRate)
     {
-        int sampleLength = (int)Math.Round(sampleRate * time);
+        int sampleLength = (int)Math.Round(clickSampleRate * clickTime);
         float maxValue = 1f / 4f;
 
-        var audioClip = AudioClip.Create("tone", sampleLength, 1, sampleRate, false);
+        var audioClip = AudioClip.Create("tone", sampleLength, 1, clickSampleRate, false);
 
         float[] samples = new float[sampleLength];
         for (var i = 0; i < sampleLength; i++)
         {
-            float s = Mathf.Sin(2.0f * Mathf.PI * frequency * ((float)i / (float)sampleRate));
+            float s = Mathf.Sin(2.0f * Mathf.PI * clickFrequency * ((float)i / (float)clickSampleRate));
             float v = s * maxValue;
             samples[i] = v;
         }
@@ -36,37 +51,85 @@ public class contract_4 : MonoBehaviour
     void Start()
     {
         audioSource = GetComponent<AudioSource>();
-        outAudioClip = CreateToneAudioClip(frequency, sampleRate);
+        if (started == false)
+        {
+            clickTime = defaultTime;
+            clickSampleRate = defaultSampleRate;
+            clickFrequency = defaultFrequency;
+            mouseOverTime = defaultTime;
+            mouseOverSampleRate = defaultSampleRate;
+            mouseOverFrequency = defaultFrequency;
+            started = true;
+        }
+        if (SceneManager.GetActiveScene().buildIndex == 1)
+        {
+            timeSlider.value = clickTime;
+            sampleRateSlider.value = clickSampleRate;
+            frequencySlider.value = clickFrequency;
+        }
+        if (SceneManager.GetActiveScene().buildIndex == 2)
+        {
+            timeSlider.value = mouseOverTime;
+            sampleRateSlider.value = mouseOverSampleRate;
+            frequencySlider.value = mouseOverFrequency;
+        }
     }
 
-    public void StartEditor()
+    void Update()
     {
-        PlayOutAudio();
-        Thread.Sleep((int)Math.Round(1000 * time));
+        if (SceneManager.GetActiveScene().buildIndex == 1)
+        {
+            clickTime = timeSlider.value;
+            clickSampleRate = (int)Math.Round(sampleRateSlider.value);
+            clickFrequency = (int)Math.Round(frequencySlider.value);
+        }
+        if (SceneManager.GetActiveScene().buildIndex == 2)
+        {
+            mouseOverTime = timeSlider.value;
+            mouseOverSampleRate = (int)Math.Round(sampleRateSlider.value);
+            mouseOverFrequency = (int)Math.Round(frequencySlider.value);
+        }
+    }
+
+    public void StartClickEditor()
+    {
+        ChangeScene();
         SceneManager.LoadScene(1);
     }
 
-    public void PlayOutAudio()
+    public void StartMouseOverEditor()
     {
+        ChangeScene();
+        SceneManager.LoadScene(2);
+    }
+
+    public void PlayOutClickAudio()
+    {
+        outAudioClip = CreateToneAudioClip(clickFrequency, clickSampleRate);
+        audioSource.PlayOneShot(outAudioClip);
+    }
+
+    public void PlayOutMouseOverAudio()
+    {
+        outAudioClip = CreateToneAudioClip(mouseOverFrequency, mouseOverSampleRate);
         audioSource.PlayOneShot(outAudioClip);
     }
 
     public void QuitGame()
     {
-        PlayOutAudio();
-        Thread.Sleep((int)Math.Round(1000 * time));
+        ChangeScene();
         Application.Quit();
     }
 
     public void Back()
     {
-        PlayOutAudio();
-        Thread.Sleep((int)Math.Round(1000 * time));
+        ChangeScene();
         SceneManager.LoadScene(0);
     }
 
-    public void StopAudio()
+    public void ChangeScene()
     {
-        audioSource.Stop();
+        PlayOutClickAudio();
+        Thread.Sleep((int)Math.Round(1000 * clickTime));
     }
 }

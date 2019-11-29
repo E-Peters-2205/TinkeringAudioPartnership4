@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Contract 4.unity
     guid: edb6eed611f2d734b91fe9272faf7581
   - enabled: 1
-    path: Assets/Scenes/Options Menu.unity
+    path: Assets/Scenes/ClickOptions.unity
     guid: 669fce2335e79204ca9864c156d03445
+  - enabled: 1
+    path: Assets/Scenes/MouseOverOptions.unity
+    guid: e3d1b1430c8195f4497021088f0dbddb
   m_configObjects: {}
