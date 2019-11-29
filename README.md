@@ -2,7 +2,9 @@
 
 https://github.com/E-Peters-2205/TinkeringAudioPartnership4
 
-Assets/Scripts/mainMenu.cs
+Edward Peters:
+Assets/Scenes/Contract 4.unity
+Assets/Scripts/contract_4.cs
 
 George Jenkins - Contract 3
 Edward Peters - Contract 4
