@@ -1,21 +1,21 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEditor;
+using System;
+using System.Threading;
 
 public class contract_4 : MonoBehaviour
 {
     private AudioSource audioSource;
     private AudioClip outAudioClip;
-    public int frequency2;
-    public int time;
+    public int frequency;
+    public int sampleRate;
+    public float time;
 
-    // Private 
-    private AudioClip CreateToneAudioClip(int frequency)
+    // Private
+    private AudioClip CreateToneAudioClip(int frequency, int sampleRate)
     {
-        int sampleRate = 44100;
-        int sampleLength = sampleRate * time;
+        int sampleLength = (int)Math.Round(sampleRate * time);
         float maxValue = 1f / 4f;
 
         var audioClip = AudioClip.Create("tone", sampleLength, 1, sampleRate, false);
@@ -36,12 +36,14 @@ public class contract_4 : MonoBehaviour
     void Start()
     {
         audioSource = GetComponent<AudioSource>();
-        outAudioClip = CreateToneAudioClip(frequency2);
+        outAudioClip = CreateToneAudioClip(frequency, sampleRate);
     }
 
-    public void StartGame()
+    public void StartEditor()
     {
         PlayOutAudio();
+        Thread.Sleep((int)Math.Round(1000 * time));
+        SceneManager.LoadScene(1);
     }
 
     public void PlayOutAudio()
@@ -52,6 +54,15 @@ public class contract_4 : MonoBehaviour
     public void QuitGame()
     {
         PlayOutAudio();
+        Thread.Sleep((int)Math.Round(1000 * time));
+        Application.Quit();
+    }
+
+    public void Back()
+    {
+        PlayOutAudio();
+        Thread.Sleep((int)Math.Round(1000 * time));
+        SceneManager.LoadScene(0);
     }
 
     public void StopAudio()
