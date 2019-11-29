@@ -12,9 +12,13 @@ using UnityEditor;
 public class AudioTinker : MonoBehaviour {
     private AudioSource audioSource;
     private AudioClip outAudioClip;
+    private object SavWav;
+
+
+
     // Variables to change notes ect
-    
-    int Duration = 1;
+
+    double Duration = 1;
 
 
     // the frquancy of notes
@@ -22,6 +26,14 @@ public class AudioTinker : MonoBehaviour {
 
     int Note_C = (1047);
     int Note_D = (1175);
+    int Note_E = (1319);
+    int Note_F = (1397);
+    int Note_G = (1568);
+
+    
+
+    List<int> TonesC6_B6 = new List<int>() { 1047, 1175, 1319, 1379, 1568, 1760, 1976}; 
+
 
 
     // Start is called before the first frame update
@@ -50,10 +62,10 @@ public class AudioTinker : MonoBehaviour {
     
     
     // Private 
-    private AudioClip CreateToneAudioClip(int Frequency, int Duration) {
-        int sampleDurationSecs = Duration;
+    private AudioClip CreateToneAudioClip(int Frequency, double Duration) {
+        
         int sampleRate = 44100;
-        int sampleLength = sampleRate * sampleDurationSecs;              //Above sets variables that will be used to create the tone.
+        int sampleLength =  Convert.ToInt32 (Math.Floor(sampleRate * Duration));              //Above sets variables that will be used to create the tone.
         float maxValue = 1f / 4f;                                        // max value is a multiplyer to evenly change every audio sample. 
         
         var audioToneClip = AudioClip.Create("tone", sampleLength, 1, sampleRate, false);
@@ -86,11 +98,11 @@ public class AudioTinker : MonoBehaviour {
 
             if(r.Next(10) % 2 == 0)                             // number checker to see if odd or even, this changes the note that is played  
             {
-                freq = Note_C;                           
+                freq = TonesC6_B6[0];                           
             }
             else
             {
-                freq = Note_D;
+                freq = TonesC6_B6[1];
             }
 
             Audio_Clips.Add(CreateToneAudioClip(freq, Duration));                //gets the audio numbers for first note in this case C and stores it in an array 
@@ -103,7 +115,7 @@ public class AudioTinker : MonoBehaviour {
 
         foreach (AudioClip note in Audio_Clips)  // this loop counts the samples 
         {
-            targetSamples += note.samples;           
+            targetSamples += note.samples;       // adds the amout of samples in each clip, usefull for when the duration of samples changes.    
         }
 
         
@@ -116,7 +128,7 @@ public class AudioTinker : MonoBehaviour {
         {
             
 
-            float[] samples = new float[note.samples];
+            float[] samples = new float[note.samples];              // 
             note.GetData(samples, 0);
 
             melodyClip.SetData(samples, offsetPosition);
@@ -128,16 +140,9 @@ public class AudioTinker : MonoBehaviour {
 
 
         // need to save the audio file 
+        
 
-        /*
-        var audioClip = AudioClip.Create("tone", sampleLength, 1, sampleRate, false);
-
-        for (var c = 0; c < Melody_Chunks.Length; c++) {       // seting up a loop to add all the tones together ino a single audio clip 
-            
-            audioClip.SetData(Melody_Chunks[c], c);              
-
-        }
-        */
     }
 
 }
+
